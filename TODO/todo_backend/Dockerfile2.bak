@@ -1,0 +1,29 @@
+# Use a lightweight Node.js image
+FROM node:alpine
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Change ownership to the 'node' user (assuming the container runs as node user)
+RUN chown -R node:node /app
+
+# Copy package.json and package-lock.json first (if it exists)
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application files
+COPY . .
+
+RUN ls -la /app
+
+# Ensure proper permissions for 'server.js' file
+RUN chmod 755 /app/server.js
+
+# Expose the backend port
+EXPOSE 3001
+
+# Command to start the backend server
+CMD ["node", "server.js"]
+

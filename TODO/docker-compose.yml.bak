@@ -1,0 +1,52 @@
+version: "3.9"  # Use the latest stable version of Docker Compose
+services:
+  db_mongo:
+    image: mongo:latest  # Use the official MongoDB image
+    container_name: mongo_db
+    ports:
+      - "27017:27017"  # Expose MongoDB port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Aa@123456789
+    volumes:
+      - ./mongo_data:/data/db  # Bind mount local 'mongo_data' folder to '/data/db' in the container
+    networks:
+      - my_network
+
+  backend:
+    build:
+      context: ./todo_backend  # Directory containing the backend code and Dockerfile
+    container_name: backend
+    ports:
+      - "3001:3001"  # Expose the backend's port
+    depends_on:
+      - db_mongo
+    environment:
+      MONGO_URL: mongodb://root:Aa@123456789@db_mongo:27017  # MongoDB connection string
+    volumes:
+      - ./backend:/app  # Bind mount local 'backend' directory to '/app' in the container
+    networks:
+      - my_network
+
+  frontend:
+    build:
+      context: ./todo_frontend  # Directory containing the frontend code and Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"  # Expose the React app's port
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app  # Bind mount local 'frontend' directory to '/app' in the container
+    networks:
+      - my_network
+
+        
+volumes:
+  mongo_data:  # This is for MongoDB data persistence, but it's now mapped to a local directory
+
+
+networks:
+  my_network:
+    driver: bridge
+
