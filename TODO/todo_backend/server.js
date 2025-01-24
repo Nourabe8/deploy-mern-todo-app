@@ -10,15 +10,9 @@ app.use(express.json());
 // Use environment variables for MongoDB connection
 const mongoUrl = process.env.MONGO_URL;
 
-//mongoose.connect('mongodb://root:Aa123456789@mongo_db:27017/TODO?authSource=admin',
-  //console.log('MongoDB connected')
-//)
-
 mongoose.connect(mongoUrl,
   console.log('MongoDB connected')
 )
-
-
 
 
 app.listen(5000,
