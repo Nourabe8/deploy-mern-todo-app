@@ -11,7 +11,7 @@ pipeline {
                 // Checkout the code from GitHub
                // git 'https://github.com/Nourabe8/deploy-mern-todo-app.git'
                // Checkout the 'main' branch from GitHub
-                  git branch: 'main', credentialsId: '57a1eb60-d717-4aa4-808f-95ccacd58ee6', url: 'https://github.com/Nourabe8/Welcom'
+                git credentialsId: 'github-creds', branch: 'main', url: 'https://github.com/Nourabe8/deploy-mern-todo-app.git'
 
             }
         }
