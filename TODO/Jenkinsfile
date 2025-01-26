@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_COMPOSE_VERSION = '1.29.2'  // Define the version of Docker Compose
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from GitHub
+               // git 'https://github.com/Nourabe8/deploy-mern-todo-app.git'
+               // Checkout the 'main' branch from GitHub
+                  git branch: 'main', credentialsId: '57a1eb60-d717-4aa4-808f-95ccacd58ee6', url: 'https://github.com/Nourabe8/Welcom'
+
+            }
+        }
+        
+stage('Install Docker & Docker Compose') {
+    steps {
+        script {
+            // Check if Docker is installed
+            def dockerInstalled = sh(script: 'docker --version', returnStatus: true)
+            
+            // Check if Docker Compose is installed
+            def dockerComposeInstalled = sh(script: 'docker-compose --version', returnStatus: true)
+            
+            if (dockerInstalled != 0 || dockerComposeInstalled != 0) {
+                // If Docker or Docker Compose is not installed, install them
+                echo "Docker or Docker Compose not found, installing..."
+                
+                sh '''
+                sudo apt-get update
+                sudo apt-get install -y docker.io
+                sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+                '''
+            } else {
+                echo "Docker and Docker Compose are already installed, skipping installation."
+            }
+        }
+    }
+}
+
+        stage('Build Docker Images') {
+            steps {
+                // Build the Docker images for frontend, backend, and MongoDB
+                sh 'docker-compose build'
+            }
+        }
+
+        stage('Deploy Containers') {
+            steps {
+                // Start the containers using Docker Compose
+                sh 'docker-compose up -d'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                script {
+                    // Verify the deployment, e.g., check if containers are running
+                    def result = sh(script: 'docker-compose ps', returnStdout: true).trim()
+                    echo "Docker Compose status: ${result}"
+                    
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up resources (optional)
+            cleanWs()
+        }
+    }
+}
