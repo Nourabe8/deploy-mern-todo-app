@@ -1,0 +1,71 @@
+- name: Install Docker, Jenkins, and Git on the VM
+  hosts: all
+  remote_user: root
+  become: yes
+  tasks:
+    # Update the package cache
+    - name: Update the package cache
+      apt:
+        update_cache: yes
+
+    # Install Docker
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+# Install OpenJDK 11 (or your desired Java version)
+    - name: Install OpenJDK 17
+      apt:
+        name: openjdk-17-jdk
+        state: present
+
+    # Set the JAVA_HOME environment variable
+    - name: Set JAVA_HOME environment variable
+      lineinfile:
+        path: /etc/default/jenkins
+        regexp: '^JAVA_HOME='
+        line: 'JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64'
+        create: yes
+
+
+    # Add Jenkins repository key and repository using gpg and apt_sources
+    - name: Add Jenkins repository GPG key
+      command: gpg --no-default-keyring --keyring /usr/share/keyrings/jenkins-keyring.gpg --keyserver keyserver.ubuntu.com --recv-keys 5BA31D57EF5975CA
+      become: yes
+       
+
+    # Add Jenkins repository
+    - name: Add Jenkins repository
+      ansible.builtin.copy:
+        content: "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/"
+        dest: /etc/apt/sources.list.d/jenkins.list
+        mode: '0644'
+
+    # Update the package cache for Jenkins repo
+    - name: Update the package cache (for Jenkins repo)
+      apt:
+        update_cache: yes
+        
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+
+    - name: Start and enable Jenkins service
+      systemd:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    # Install Git
+    - name: Install Git
+      apt:
+        name: git
+        state: present
