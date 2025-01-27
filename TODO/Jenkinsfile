@@ -57,7 +57,11 @@ stage('Install Docker & Docker Compose') {
         stage('Deploy Containers') {
             steps {
                 // Start the containers using Docker Compose
-                sh 'docker-compose up -d'
+              //  sh 'docker-compose up -d'
+                  sh '''
+                        cd TODO || exit 1
+                        docker-compose up -d
+                    '''
             }
         }
 
