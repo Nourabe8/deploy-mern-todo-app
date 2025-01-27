@@ -1,75 +1,95 @@
-# MERN TODO List App
+# MERN TODO List App - DevOps Edition
 
-This is a TODO List application built using the MERN stack. It allows users to manage their tasks effectively.
+This is a fork and extension of the MERN TODO List App originally created by Atharva Kulkarni. And this project automates the deployment of a MERN (MongoDB, Express, React, Node.js) TODO List application using Jenkins, Docker Compose, Ansible, and Terraform. It simplifies the entire process, from provisioning the infrastructure to deploying the application, ensuring consistency and efficiency.
 
-## Prerequisites
+## **Features**
 
-Before running the application, ensure you have the following installed:
-- Node.js and npm (Node Package Manager)
-- MongoDB
-- MongoDB Compass (for database management)
+- Infrastructure provisioning using Terraform.
+- Configuration management and deployment using Ansible.
+- Application containerization using Docker Compose.
+- Fully automated deployment pipeline with Jenkins.
 
-## Setup Instructions
 
-### 1. Clone the repository
 
-```bash
-git clone https://github.com/AtharvaKulkarniIT/mern-todo-app.git
-```
+## **Project Workflow**
 
-### 2. Install dependencies
+1. **Provision Infrastructure**:
 
-```bash
-cd mern-todo-app
+   - Use Terraform to create the virtual machine (VM) in Proxmox Virtual Environment for deployment.
 
-# Split the terminal :
+2. **Automate Configuration**:
 
-# Install backend dependencies
-cd todo_backend
-npm install
+   - Use Ansible to install Docker, Git, configure the environment, and set up Jenkins on the VM.
 
-# Install frontend dependencies
-cd todo_frontend
-npm install
-```
+3. **Continuous Integration/Continuous Deployment (CI/CD) Pipeline**:
 
-### 3. MongoDB Setup
+   - Jenkins pulls the latest code from the GitHub repository.
+   - Build Docker images for the frontend and backend locally on the target VM.
+   - Deploy the application using Docker Compose.
 
-- Open MongoDB Compass
-- Create a new database named `Todo`
-- Inside the `Todo` database, create a collection named `tasks`
+## **Setup Instructions**
 
-### 4. Server setup for database connection
+### **Prerequisites**
 
-```bash
-PORT=5000  # Port number for the server (you can change it if needed)
-MONGO_URI=mongodb://127.0.0.1:27017/Todo  # MongoDB connection URI
-```
+Before running this project, ensure you have the following installed:
 
-### 5. Running the App
+- Terraform
+- Ansible
+- Jenkins
+- Docker and Docker Compose
+- Git
 
-```bash
-# Start the server (from the 'todo_backend' directory)
-npm start
+### **Steps to Deploy**
 
-# Start the client (from the 'todo_frontend' directory)
-npm start
-```
+1. **Clone the Repository**:
 
-The server will run on `http://localhost:5000` and the client on `http://localhost:3000`.
+   ```bash
+   git clone <your-repository-url>
+   cd <your-repository-folder>
+   ```
 
-## Usage
+2. **Provision Infrastructure**:
 
-- Open your web browser and go to `http://localhost:3000`.
-- You can add ,update tasks, mark them as completed or delete them.
+   - Use Terraform to create the target VM:
+     ```bash
+     terraform init
+     terraform apply
+     ```
 
-## Contributing
+3. **Configure the VM**:
 
-Feel free to contribute to this project by submitting pull requests.
+   - Use Ansible to install necessary tools and configure the environment:
+     ```bash
+     ansible-playbook -i inventory install-tools.yml
+     ```
 
-## License
+4. **Run the CI/CD Pipeline**:
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+   - Access Jenkins and trigger the build job to:
+     - Pull the latest code from GitHub.
+     - Build Docker images locally for the frontend and backend.
+     - Deploy the application using Docker Compose.
 
-## Output
-![MERN TODO List App](https://drive.google.com/uc?id=135HfGq09XYieu-1sG9pQeQ41Sx1ytZ1m)
+### **Access the Application**
+
+Once the deployment is complete, access the application in your browser:
+
+- **Frontend**: `http://<vm-ip>:3000`
+- **Backend**: `http://<vm-ip>:5000`
+
+## **Technologies Used**
+
+- **Jenkins**: Automates the CI/CD pipeline.
+- **Terraform**: Provisions infrastructure.
+- **Ansible**: Manages configurations and automates deployments.
+- **Docker Compose**: Orchestrates multi-container applications.
+- **GitHub**: Hosts the application code.
+
+## **License**
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+Feel free to customize this README to fit your needs or provide additional details about your unique setup or configurations.
+
