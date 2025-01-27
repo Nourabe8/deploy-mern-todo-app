@@ -45,7 +45,12 @@ stage('Install Docker & Docker Compose') {
         stage('Build Docker Images') {
             steps {
                 // Build the Docker images for frontend, backend, and MongoDB
-                sh 'docker-compose build'
+                
+                //sh 'docker-compose build'
+                  sh '''
+                        cd TODO || exit 1
+                        docker-compose build
+                    '''
             }
         }
 
