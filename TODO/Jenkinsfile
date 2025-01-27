@@ -68,10 +68,20 @@ stage('Install Docker & Docker Compose') {
         stage('Verify Deployment') {
             steps {
                 script {
-                    sh 'cd TODO || exit 1'
+                   // sh 'cd TODO || exit 1'
                     // Verify the deployment, e.g., check if containers are running
-                    def result = sh(script: 'docker-compose ps', returnStdout: true).trim()
-                    echo "Docker Compose status: ${result}"
+                    //def result = sh(script: 'docker-compose ps', returnStdout: true).trim()
+                    //echo "Docker Compose status: ${result}"
+                    sh '''
+                    cd TODO || exit 1
+                    if [ -f "docker-compose.yml" ]; then
+                        result=$(docker-compose ps)
+                        echo "Docker Compose status: ${result}"
+                    else
+                        echo "docker-compose.yml not found in the TODO directory!"
+                        exit 1
+                    fi
+                    '''
                     
                 }
             }
