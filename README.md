@@ -89,7 +89,3 @@ Once the deployment is complete, access the application in your browser:
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
----
-
-Feel free to customize this README to fit your needs or provide additional details about your unique setup or configurations.
-
