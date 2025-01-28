@@ -3,6 +3,9 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE_VERSION = '1.29.2'  // Define the version of Docker Compose
+
+        MONGO_URL = credentials('MONGO_URL') // This securely fetches the value
+    
     }
 
     stages {
