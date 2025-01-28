@@ -20,6 +20,7 @@ pipeline {
                 script {
                     // Copy the .env file to the current workspace
                     sh '''
+                    mkdir -p "${WORKSPACE}/TODO"  # Create the destination directory if it doesn't exist
                         cp /home/admin1/deploy-mern-todo-app/TODO/.env ${WORKSPACE}/TODO/.env
                     '''
                 }
