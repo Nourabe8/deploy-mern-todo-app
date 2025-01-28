@@ -3,91 +3,89 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE_VERSION = '1.29.2'  // Define the version of Docker Compose
-
-      // MONGO_URL = credentials('MONGO_URL') // This securely fetches the value
         MONGO_CREDENTIALS = credentials('mongo_credentials')
         MONGO_URL = "mongodb://${MONGO_CREDENTIALS_USR}:${MONGO_CREDENTIALS_PSW}@mongo_db:27017/TODO?authSource=admin"
-    
     }
 
     stages {
         stage('Checkout') {
             steps {
                 // Checkout the code from GitHub
-               // git 'https://github.com/Nourabe8/deploy-mern-todo-app.git'
-               // Checkout the 'main' branch from GitHub
                 git credentialsId: 'github-creds', branch: 'main', url: 'https://github.com/Nourabe8/deploy-mern-todo-app.git'
+            }
+        }
 
+        stage('Copy .env') {
+            steps {
+                script {
+                    // Copy the .env file to the current workspace
+                    sh '''
+                        cp /home/admin1/deploy-mern-todo-app/TODO/.env ${WORKSPACE}/TODO/.env
+                    '''
+                }
             }
         }
-        
-stage('Install Docker & Docker Compose') {
-    steps {
-        script {
-            // Check if Docker is installed
-            def dockerInstalled = sh(script: 'docker --version', returnStatus: true)
-            
-            // Check if Docker Compose is installed
-            def dockerComposeInstalled = sh(script: 'docker-compose --version', returnStatus: true)
-            
-            if (dockerInstalled != 0 || dockerComposeInstalled != 0) {
-                // If Docker or Docker Compose is not installed, install them
-                echo "Docker or Docker Compose not found, installing..."
-                
-                sh '''
-                sudo apt-get update
-                sudo apt-get install -y docker.io
-                sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                sudo chmod +x /usr/local/bin/docker-compose
-                '''
-            } else {
-                echo "Docker and Docker Compose are already installed, skipping installation."
+
+        stage('Install Docker & Docker Compose') {
+            steps {
+                script {
+                    // Check if Docker is installed
+                    def dockerInstalled = sh(script: 'docker --version', returnStatus: true)
+                    
+                    // Check if Docker Compose is installed
+                    def dockerComposeInstalled = sh(script: 'docker-compose --version', returnStatus: true)
+                    
+                    if (dockerInstalled != 0 || dockerComposeInstalled != 0) {
+                        // If Docker or Docker Compose is not installed, install them
+                        echo "Docker or Docker Compose not found, installing..."
+                        
+                        sh '''
+                        sudo apt-get update
+                        sudo apt-get install -y docker.io
+                        sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                        sudo chmod +x /usr/local/bin/docker-compose
+                        '''
+                    } else {
+                        echo "Docker and Docker Compose are already installed, skipping installation."
+                    }
+                }
             }
         }
-    }
-}
 
         stage('Build Docker Images') {
             steps {
                 // Build the Docker images for frontend, backend, and MongoDB
-                
-                //sh 'docker-compose build'
-                  sh '''
-                        cd TODO || exit 1
-                        docker-compose build
-                    '''
+                sh '''
+                    cd TODO || exit 1
+                    docker-compose build
+                '''
             }
         }
 
         stage('Deploy Containers') {
             steps {
                 // Start the containers using Docker Compose
-              //  sh 'docker-compose up -d'
-                  sh '''
-                        cd TODO || exit 1
-                        docker-compose up -d
-                    '''
+                sh '''
+                    cd TODO || exit 1
+                    docker-compose up -d
+                '''
             }
         }
 
         stage('Verify Deployment') {
             steps {
                 script {
-                   // sh 'cd TODO || exit 1'
                     // Verify the deployment, e.g., check if containers are running
-                    //def result = sh(script: 'docker-compose ps', returnStdout: true).trim()
-                    //echo "Docker Compose status: ${result}"
                     sh '''
-                    cd TODO || exit 1
-                    if [ -f "docker-compose.yml" ]; then
-                        result=$(docker-compose ps)
-                        echo "Docker Compose status: ${result}"
-                    else
-                        echo "docker-compose.yml not found in the TODO directory!"
-                        exit 1
-                    fi
+                        cd TODO || exit 1
+                        if [ -f "docker-compose.yml" ]; then
+                            result=$(docker-compose ps)
+                            echo "Docker Compose status: ${result}"
+                        else
+                            echo "docker-compose.yml not found in the TODO directory!"
+                            exit 1
+                        fi
                     '''
-                    
                 }
             }
         }
